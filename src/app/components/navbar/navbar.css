@@ -1,0 +1,31 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #111827;
+  color: #f9fafb;
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo span {
+  color: #38bdf8;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navbar-links a:hover {
+  color: #38bdf8;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

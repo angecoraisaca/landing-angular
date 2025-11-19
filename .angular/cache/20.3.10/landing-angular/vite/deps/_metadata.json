@@ -1,0 +1,52 @@
+{
+  "hash": "e02fd542",
+  "configHash": "38d430b5",
+  "lockfileHash": "68fd86e0",
+  "browserHash": "89f918be",
+  "optimized": {
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "002fa9b6",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "8260efbc",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "b112887e",
+      "needsInterop": false
+    },
+    "three": {
+      "src": "../../../../../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "a4cb0f0d",
+      "needsInterop": false
+    },
+    "three/examples/jsm/controls/OrbitControls.js": {
+      "src": "../../../../../../node_modules/three/examples/jsm/controls/OrbitControls.js",
+      "file": "three_examples_jsm_controls_OrbitControls__js.js",
+      "fileHash": "3eaf31ab",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-IUDTQY6Y": {
+      "file": "chunk-IUDTQY6Y.js"
+    },
+    "chunk-L6MANCWD": {
+      "file": "chunk-L6MANCWD.js"
+    },
+    "chunk-QLQBX6FV": {
+      "file": "chunk-QLQBX6FV.js"
+    },
+    "chunk-GOMI4DH3": {
+      "file": "chunk-GOMI4DH3.js"
+    }
+  }
+}

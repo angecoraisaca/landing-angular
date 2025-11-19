@@ -1,0 +1,13 @@
+.hero {
+  min-height: 80vh;
+  padding: 4rem 2rem;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  background: radial-gradient(circle at top left, #1f2937, #020617);
+  color: #f9fafb;
+}
+
+.btn-primary { background: #38bdf8; color: #020617; }
+.btn-secondary { border: 1px solid #4b5563; }
+.hero-card { background: #020617; padding: 2rem; border-radius: 1.25rem; }
