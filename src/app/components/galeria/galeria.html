@@ -5,9 +5,10 @@
 
   <div class="grid">
     <div class="card" *ngFor="let p of productos">
-      <img [src]="p.imagen" alt="{{ p.nombre }}" />
 
-      <h3>{{ p.nombre }}</h3>
+      <img [src]="p.imagen_url" alt="{{ p.titulo }}" />
+
+      <h3>{{ p.titulo }}</h3>
       <p>{{ p.descripcion }}</p>
 
       <div class="precio">${{ p.precio }}</div>
