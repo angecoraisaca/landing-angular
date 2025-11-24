@@ -7,6 +7,7 @@ import { Footer } from './components/footer/footer';
 import { Escena3d } from './components/escena3d/escena3d';
 import { Galeria } from './components/galeria/galeria';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,

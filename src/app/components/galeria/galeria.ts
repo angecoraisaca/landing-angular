@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Productos } from '../../services/productos';
-import { Producto } from '../../interfaces/producto';
 
 @Component({
   selector: 'app-galeria',
   standalone: true,
-  templateUrl: './galeria.html',   // ← CORREGIDO
+  imports: [CommonModule],
+  templateUrl: './galeria.html',
   styleUrls: ['./galeria.css']
 })
-export class Galeria implements OnInit {
-
-  productos: Producto[] = [];
+export class Galeria {
+  productos: any[] = [];
   cargando = true;
-  error = '';
+  error = false;
 
-  constructor(private productosService: Productos) {}
+  constructor(
+    private productosService: Productos,
+    private cdr: ChangeDetectorRef      // 👈 se agrega aquí
+  ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.productosService.getProductos().subscribe({
       next: (data) => {
         this.productos = data;
         this.cargando = false;
+        this.cdr.detectChanges();       // 👈 fuerza actualización de vista
       },
-      error: (err) => {
-        this.error = 'No se pudieron cargar los productos';
+      error: () => {
+        this.error = true;
         this.cargando = false;
+        this.cdr.detectChanges();       // 👈 también aquí
       }
     });
   }

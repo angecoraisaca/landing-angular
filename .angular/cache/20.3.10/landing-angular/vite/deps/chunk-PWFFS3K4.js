@@ -1,4 +1,8 @@
 import {
+  XhrFactory,
+  parseCookieValue
+} from "./chunk-DASHI2JV.js";
+import {
   APP_BOOTSTRAP_LISTENER,
   ApplicationRef,
   DOCUMENT,
@@ -43,21 +47,6 @@ import {
   __objRest,
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
-
-// node_modules/@angular/common/fesm2022/xhr.mjs
-function parseCookieValue(cookieStr, name) {
-  name = encodeURIComponent(name);
-  for (const cookie of cookieStr.split(";")) {
-    const eqIndex = cookie.indexOf("=");
-    const [cookieName, cookieValue] = eqIndex == -1 ? [cookie, ""] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
-    if (cookieName.trim() === name) {
-      return decodeURIComponent(cookieValue);
-    }
-  }
-  return null;
-}
-var XhrFactory = class {
-};
 
 // node_modules/@angular/common/fesm2022/module.mjs
 var HttpHandler = class {
@@ -2741,8 +2730,6 @@ function appendMissingHeadersDetection(url, headers, headersToInclude) {
 }
 
 export {
-  parseCookieValue,
-  XhrFactory,
   HttpHandler,
   HttpBackend,
   HttpHeaders,
@@ -2785,7 +2772,6 @@ export {
 };
 /*! Bundled license information:
 
-@angular/common/fesm2022/xhr.mjs:
 @angular/common/fesm2022/module.mjs:
 @angular/common/fesm2022/http.mjs:
   (**
@@ -2794,4 +2780,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-RA7UDALE.js.map
+//# sourceMappingURL=chunk-PWFFS3K4.js.map

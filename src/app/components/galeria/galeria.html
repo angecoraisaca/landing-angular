@@ -1,7 +1,7 @@
-<div class="galeria">
+<div class="galeria-container">
 
   <p *ngIf="cargando">Cargando productos...</p>
-  <p *ngIf="error">{{ error }}</p>
+  <p *ngIf="error">Error al cargar productos.</p>
 
   <div class="grid">
     <div class="card" *ngFor="let p of productos">
@@ -9,7 +9,8 @@
 
       <h3>{{ p.nombre }}</h3>
       <p>{{ p.descripcion }}</p>
-      <strong>$ {{ p.precio }}</strong>
+
+      <div class="precio">${{ p.precio }}</div>
 
       <button>Agregar al carrito</button>
     </div>

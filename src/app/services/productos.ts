@@ -8,15 +8,15 @@ import { Producto } from '../interfaces/producto';
 })
 export class Productos {
 
-  private apiURL = 'http://localhost:3000/api/productos';
+  private apiUrl = 'http://localhost:3000/api/productos';
 
   constructor(private http: HttpClient) {}
 
   getProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(this.apiURL);
+    return this.http.get<Producto[]>(this.apiUrl);
   }
 
   getProducto(id: number): Observable<Producto> {
-    return this.http.get<Producto>(`${this.apiURL}/${id}`);
+    return this.http.get<Producto>(`${this.apiUrl}/${id}`);
   }
 }
