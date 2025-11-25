@@ -1,0 +1,17 @@
+<div *ngIf="!cargando; else cargandoTpl">
+
+  <h2>{{ producto.titulo }}</h2>
+
+  <img [src]="producto.imagen_url" alt="{{ producto.titulo }}">
+
+  <p>{{ producto.descripcion }}</p>
+
+  <div class="precio">Precio: ${{ producto.precio }}</div>
+
+  <button routerLink="/galeria">Volver</button>
+
+</div>
+
+<ng-template #cargandoTpl>
+  <p>Cargando...</p>
+</ng-template>

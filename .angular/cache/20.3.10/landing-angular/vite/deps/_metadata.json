@@ -1,49 +1,49 @@
 {
-  "hash": "971871fc",
-  "configHash": "43c7e55f",
-  "lockfileHash": "ed2afcd7",
-  "browserHash": "6eda1578",
+  "hash": "c36c3dd2",
+  "configHash": "980d5f96",
+  "lockfileHash": "68fd86e0",
+  "browserHash": "e67b3e8a",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "67a5d533",
+      "fileHash": "c192dea3",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "0421a902",
+      "fileHash": "25bbbb29",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "3b9e60cc",
+      "fileHash": "2c8a8a7c",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "454b703c",
+      "fileHash": "5c189355",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "faf0458f",
+      "fileHash": "ded9b88e",
       "needsInterop": false
     },
     "three": {
       "src": "../../../../../../node_modules/three/build/three.module.js",
       "file": "three.js",
-      "fileHash": "40ba8c45",
+      "fileHash": "d5526d93",
       "needsInterop": false
     },
     "three/examples/jsm/controls/OrbitControls.js": {
       "src": "../../../../../../node_modules/three/examples/jsm/controls/OrbitControls.js",
       "file": "three_examples_jsm_controls_OrbitControls__js.js",
-      "fileHash": "59c8b863",
+      "fileHash": "22eb2a7e",
       "needsInterop": false
     }
   },

@@ -1,5 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';       // 👈 IMPORTANTE
 import { Productos } from '../../services/productos';
 
 @Component({
@@ -16,7 +17,8 @@ export class Galeria {
 
   constructor(
     private productosService: Productos,
-    private cdr: ChangeDetectorRef      // 👈 se agrega aquí
+    private cdr: ChangeDetectorRef,
+    private router: Router       // 👈 INYECTAS EL ROUTER
   ) {}
 
   ngOnInit() {
@@ -24,13 +26,18 @@ export class Galeria {
       next: (data) => {
         this.productos = data;
         this.cargando = false;
-        this.cdr.detectChanges();       // 👈 fuerza actualización de vista
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = true;
         this.cargando = false;
-        this.cdr.detectChanges();       // 👈 también aquí
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  // 👇 MÉTODO QUE NAVEGA AL DETALLE
+  verDetalles(id: number) {
+    this.router.navigate(['/producto', id]);
   }
 }
