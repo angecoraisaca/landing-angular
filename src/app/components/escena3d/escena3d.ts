@@ -4,38 +4,33 @@ import {
   ElementRef,
   OnDestroy,
   ViewChild,
-  HostListener,
+  HostListener
 } from '@angular/core';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 @Component({
   selector: 'app-escena3d',
   templateUrl: './escena3d.html',
-  styleUrls: ['./escena3d.css'],
+  styleUrls: ['./escena3d.css']
 })
 export class Escena3d implements AfterViewInit, OnDestroy {
+
   @ViewChild('rendererContainer', { static: false })
   rendererContainer!: ElementRef<HTMLDivElement>;
 
-  // Three.js Core
+  // Three.js
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
+  private cube!: THREE.Mesh;
   private controls!: OrbitControls;
 
-  // Modelo 3D
-  private modelo: THREE.Object3D | null = null;
-
-  // Animation
+  // Animación
   private animationId: number | null = null;
   rotando = true;
 
-  // ------------------------------
-  // Ciclo de vida Angular
-  // ------------------------------
   ngAfterViewInit(): void {
     this.initScene();
     this.startAnimation();
@@ -48,10 +43,8 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     }
   }
 
-  // ------------------------------
-  // Responsive: Ajustar tamaño
-  // ------------------------------
-  @HostListener('window:resize')
+  // Redimensionar al cambiar tamaño de ventana
+  @HostListener('window:resize', [])
   onWindowResize(): void {
     if (!this.camera || !this.renderer || !this.rendererContainer) return;
 
@@ -63,87 +56,89 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     this.renderer.setSize(width, height);
   }
 
-  // ------------------------------
-  // Inicializar escena
-  // ------------------------------
   private initScene(): void {
-    // Crear escena
+    // 1. Escena
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x020617);
 
-    // Dimensiones
+    // 2. Cámara
     const width = this.rendererContainer.nativeElement.clientWidth;
     const height = this.rendererContainer.nativeElement.clientHeight;
+    const aspectRatio = width / height;
 
-    // Cámara
-    this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(
+      60,            // campo de visión
+      aspectRatio,   // aspect ratio
+      0.1,           // plano cercano
+      1000           // plano lejano
+    );
     this.camera.position.set(2, 2, 4);
 
-    // Renderer
+    // 3. Renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.shadowMap.enabled = true;
+
     this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
 
-    // Luces
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // 4. Luz ambiental
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     this.scene.add(ambientLight);
 
-    const directional = new THREE.DirectionalLight(0xffffff, 2);
+    // 5. Luz direccional
+    const directional = new THREE.DirectionalLight(0xffffff, 0.8);
     directional.position.set(5, 5, 5);
-    directional.castShadow = true;  
+    directional.castShadow = true;
     this.scene.add(directional);
 
-    // Loader GLTF
-    
-    const loader = new GLTFLoader();
+    // 6. Cubo
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x22c55e,
+      roughness: 0.4,
+      metalness: 0.2
+    });
+    this.cube = new THREE.Mesh(geometry, material);
+    this.cube.castShadow = true;
+    this.cube.receiveShadow = true;
+    this.scene.add(this.cube);
 
-    loader.load('assets/models/cuy.glb', (gltf) => {
-      this.modelo = gltf.scene; // Guarda el modelo en una propiedad
-      this.modelo.castShadow = true;
-      this.modelo.receiveShadow = true;
-      this.scene.add(this.modelo);
-    },
-      (xhr) => {
-        console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-      },
-      (error) => {
-        console.error('Error al cargar el modelo:', error);
-      }
-    );
-
-
-    // Piso opcional
+    // 7. Piso opcional
     const planeGeometry = new THREE.PlaneGeometry(6, 6);
     const planeMaterial = new THREE.MeshStandardMaterial({
       color: 0x111827,
       roughness: 0.8,
+      metalness: 0
     });
-
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = -0.6;
     plane.receiveShadow = true;
     this.scene.add(plane);
 
-    // Controles
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // 8. OrbitControls para rotar con el mouse
+    this.controls = new OrbitControls(
+      this.camera,
+      this.renderer.domElement
+    );
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
+    this.controls.rotateSpeed = 0.8;
+    this.controls.zoomSpeed = 0.8;
 
+    // 9. Render inicial
     this.renderer.render(this.scene, this.camera);
   }
 
-  // ------------------------------
-  // Animación
-  // ------------------------------
   private startAnimation(): void {
     const animate = () => {
+      // Guardar id para poder detenerlo
       this.animationId = requestAnimationFrame(animate);
 
-      if (this.rotando && this.modelo) {
-        this.modelo.rotation.y += 0.01;
+      if (this.rotando && this.cube) {
+        this.cube.rotation.x += 0.01;
+        this.cube.rotation.y += 0.015;
       }
 
       this.controls.update();
@@ -160,10 +155,17 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     }
   }
 
-  // ------------------------------
-  // Métodos botones HTML
-  // ------------------------------
+  // Métodos llamados desde el HTML
   toggleRotation(): void {
     this.rotando = !this.rotando;
+  }
+
+  cambiarColor(): void {
+    if (!this.cube) return;
+
+    const material = this.cube.material as THREE.MeshStandardMaterial;
+    // Color aleatorio
+    const randomColor = new THREE.Color(Math.random(), Math.random(), Math.random());
+    material.color = randomColor;
   }
 }

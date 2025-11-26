@@ -25,6 +25,12 @@
         {{ rotando ? 'Detener rotación' : 'Iniciar rotación' }}
       </button>
 
+      <button
+        (click)="cambiarColor()"
+        style="padding: 0.4rem 0.9rem; border-radius: 999px; border:none; cursor:pointer; background:#3b82f6; color:#e5e7eb; font-weight:600;"
+      >
+        Cambiar color del cubo
+      </button>
     </div>
 
     <p style="font-size:0.85rem; opacity:0.8; text-align:center; max-width:620px;">

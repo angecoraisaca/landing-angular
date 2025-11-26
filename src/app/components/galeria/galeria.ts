@@ -36,8 +36,5 @@ export class Galeria {
     });
   }
 
-  // 👇 MÉTODO QUE NAVEGA AL DETALLE
-  verDetalles(id: number) {
-    this.router.navigate(['/producto', id]);
-  }
+
 }

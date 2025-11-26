@@ -1,7 +1,8 @@
 import {
+  __async,
   __spreadProps,
   __spreadValues
-} from "./chunk-GOMI4DH3.js";
+} from "./chunk-WDMUDEB6.js";
 
 // node_modules/three/build/three.core.js
 var REVISION = "181";
@@ -25416,21 +25417,23 @@ var ObjectLoader = class extends Loader {
    * @param {onProgressCallback} onProgress - Executed while the loading is in progress.
    * @return {Promise<Object3D>} A Promise that resolves with the loaded 3D object.
    */
-  async loadAsync(url, onProgress) {
-    const scope = this;
-    const path = this.path === "" ? LoaderUtils.extractUrlBase(url) : this.path;
-    this.resourcePath = this.resourcePath || path;
-    const loader = new FileLoader(this.manager);
-    loader.setPath(this.path);
-    loader.setRequestHeader(this.requestHeader);
-    loader.setWithCredentials(this.withCredentials);
-    const text = await loader.loadAsync(url, onProgress);
-    const json = JSON.parse(text);
-    const metadata = json.metadata;
-    if (metadata === void 0 || metadata.type === void 0 || metadata.type.toLowerCase() === "geometry") {
-      throw new Error("THREE.ObjectLoader: Can't load " + url);
-    }
-    return await scope.parseAsync(json);
+  loadAsync(url, onProgress) {
+    return __async(this, null, function* () {
+      const scope = this;
+      const path = this.path === "" ? LoaderUtils.extractUrlBase(url) : this.path;
+      this.resourcePath = this.resourcePath || path;
+      const loader = new FileLoader(this.manager);
+      loader.setPath(this.path);
+      loader.setRequestHeader(this.requestHeader);
+      loader.setWithCredentials(this.withCredentials);
+      const text = yield loader.loadAsync(url, onProgress);
+      const json = JSON.parse(text);
+      const metadata = json.metadata;
+      if (metadata === void 0 || metadata.type === void 0 || metadata.type.toLowerCase() === "geometry") {
+        throw new Error("THREE.ObjectLoader: Can't load " + url);
+      }
+      return yield scope.parseAsync(json);
+    });
   }
   /**
    * Parses the given JSON. This is used internally by {@link ObjectLoader#load}
@@ -25471,18 +25474,20 @@ var ObjectLoader = class extends Loader {
    * @param {Object} json - The serialized 3D object.
    * @return {Promise<Object3D>} A Promise that resolves with the parsed 3D object.
    */
-  async parseAsync(json) {
-    const animations = this.parseAnimations(json.animations);
-    const shapes = this.parseShapes(json.shapes);
-    const geometries = this.parseGeometries(json.geometries, shapes);
-    const images = await this.parseImagesAsync(json.images);
-    const textures = this.parseTextures(json.textures, images);
-    const materials = this.parseMaterials(json.materials, textures);
-    const object = this.parseObject(json.object, geometries, materials, textures, animations);
-    const skeletons = this.parseSkeletons(json.skeletons, object);
-    this.bindSkeletons(object, skeletons);
-    this.bindLightTargets(object);
-    return object;
+  parseAsync(json) {
+    return __async(this, null, function* () {
+      const animations = this.parseAnimations(json.animations);
+      const shapes = this.parseShapes(json.shapes);
+      const geometries = this.parseGeometries(json.geometries, shapes);
+      const images = yield this.parseImagesAsync(json.images);
+      const textures = this.parseTextures(json.textures, images);
+      const materials = this.parseMaterials(json.materials, textures);
+      const object = this.parseObject(json.object, geometries, materials, textures, animations);
+      const skeletons = this.parseSkeletons(json.skeletons, object);
+      this.bindSkeletons(object, skeletons);
+      this.bindLightTargets(object);
+      return object;
+    });
   }
   // internals
   parseShapes(json) {
@@ -25622,54 +25627,58 @@ var ObjectLoader = class extends Loader {
     }
     return images;
   }
-  async parseImagesAsync(json) {
-    const scope = this;
-    const images = {};
-    let loader;
-    async function deserializeImage(image) {
-      if (typeof image === "string") {
-        const url = image;
-        const path = /^(\/\/)|([a-z]+:(\/\/)?)/i.test(url) ? url : scope.resourcePath + url;
-        return await loader.loadAsync(path);
-      } else {
-        if (image.data) {
-          return {
-            data: getTypedArray(image.type, image.data),
-            width: image.width,
-            height: image.height
-          };
-        } else {
-          return null;
-        }
-      }
-    }
-    if (json !== void 0 && json.length > 0) {
-      loader = new ImageLoader(this.manager);
-      loader.setCrossOrigin(this.crossOrigin);
-      for (let i = 0, il = json.length; i < il; i++) {
-        const image = json[i];
-        const url = image.url;
-        if (Array.isArray(url)) {
-          const imageArray = [];
-          for (let j = 0, jl = url.length; j < jl; j++) {
-            const currentUrl = url[j];
-            const deserializedImage = await deserializeImage(currentUrl);
-            if (deserializedImage !== null) {
-              if (deserializedImage instanceof HTMLImageElement) {
-                imageArray.push(deserializedImage);
-              } else {
-                imageArray.push(new DataTexture(deserializedImage.data, deserializedImage.width, deserializedImage.height));
-              }
+  parseImagesAsync(json) {
+    return __async(this, null, function* () {
+      const scope = this;
+      const images = {};
+      let loader;
+      function deserializeImage(image) {
+        return __async(this, null, function* () {
+          if (typeof image === "string") {
+            const url = image;
+            const path = /^(\/\/)|([a-z]+:(\/\/)?)/i.test(url) ? url : scope.resourcePath + url;
+            return yield loader.loadAsync(path);
+          } else {
+            if (image.data) {
+              return {
+                data: getTypedArray(image.type, image.data),
+                width: image.width,
+                height: image.height
+              };
+            } else {
+              return null;
             }
           }
-          images[image.uuid] = new Source(imageArray);
-        } else {
-          const deserializedImage = await deserializeImage(image.url);
-          images[image.uuid] = new Source(deserializedImage);
+        });
+      }
+      if (json !== void 0 && json.length > 0) {
+        loader = new ImageLoader(this.manager);
+        loader.setCrossOrigin(this.crossOrigin);
+        for (let i = 0, il = json.length; i < il; i++) {
+          const image = json[i];
+          const url = image.url;
+          if (Array.isArray(url)) {
+            const imageArray = [];
+            for (let j = 0, jl = url.length; j < jl; j++) {
+              const currentUrl = url[j];
+              const deserializedImage = yield deserializeImage(currentUrl);
+              if (deserializedImage !== null) {
+                if (deserializedImage instanceof HTMLImageElement) {
+                  imageArray.push(deserializedImage);
+                } else {
+                  imageArray.push(new DataTexture(deserializedImage.data, deserializedImage.width, deserializedImage.height));
+                }
+              }
+            }
+            images[image.uuid] = new Source(imageArray);
+          } else {
+            const deserializedImage = yield deserializeImage(image.url);
+            images[image.uuid] = new Source(deserializedImage);
+          }
         }
       }
-    }
-    return images;
+      return images;
+    });
   }
   parseTextures(json, images) {
     function parseConstant(value, type) {
@@ -39280,91 +39289,93 @@ var WebXRManager = class extends EventDispatcher {
     this.getSession = function() {
       return session;
     };
-    this.setSession = async function(value) {
-      session = value;
-      if (session !== null) {
-        initialRenderTarget = renderer.getRenderTarget();
-        session.addEventListener("select", onSessionEvent);
-        session.addEventListener("selectstart", onSessionEvent);
-        session.addEventListener("selectend", onSessionEvent);
-        session.addEventListener("squeeze", onSessionEvent);
-        session.addEventListener("squeezestart", onSessionEvent);
-        session.addEventListener("squeezeend", onSessionEvent);
-        session.addEventListener("end", onSessionEnd);
-        session.addEventListener("inputsourceschange", onInputSourcesChange);
-        if (attributes.xrCompatible !== true) {
-          await gl.makeXRCompatible();
-        }
-        currentPixelRatio = renderer.getPixelRatio();
-        renderer.getSize(currentSize);
-        const supportsLayers = supportsGlBinding && "createProjectionLayer" in XRWebGLBinding.prototype;
-        if (!supportsLayers) {
-          const layerInit = {
-            antialias: attributes.antialias,
-            alpha: true,
-            depth: attributes.depth,
-            stencil: attributes.stencil,
-            framebufferScaleFactor
-          };
-          glBaseLayer = new XRWebGLLayer(session, gl, layerInit);
-          session.updateRenderState({ baseLayer: glBaseLayer });
-          renderer.setPixelRatio(1);
-          renderer.setSize(glBaseLayer.framebufferWidth, glBaseLayer.framebufferHeight, false);
-          newRenderTarget = new WebGLRenderTarget(
-            glBaseLayer.framebufferWidth,
-            glBaseLayer.framebufferHeight,
-            {
-              format: RGBAFormat,
-              type: UnsignedByteType,
-              colorSpace: renderer.outputColorSpace,
-              stencilBuffer: attributes.stencil,
-              resolveDepthBuffer: glBaseLayer.ignoreDepthValues === false,
-              resolveStencilBuffer: glBaseLayer.ignoreDepthValues === false
-            }
-          );
-        } else {
-          let depthFormat = null;
-          let depthType = null;
-          let glDepthFormat = null;
-          if (attributes.depth) {
-            glDepthFormat = attributes.stencil ? gl.DEPTH24_STENCIL8 : gl.DEPTH_COMPONENT24;
-            depthFormat = attributes.stencil ? DepthStencilFormat : DepthFormat;
-            depthType = attributes.stencil ? UnsignedInt248Type : UnsignedIntType;
+    this.setSession = function(value) {
+      return __async(this, null, function* () {
+        session = value;
+        if (session !== null) {
+          initialRenderTarget = renderer.getRenderTarget();
+          session.addEventListener("select", onSessionEvent);
+          session.addEventListener("selectstart", onSessionEvent);
+          session.addEventListener("selectend", onSessionEvent);
+          session.addEventListener("squeeze", onSessionEvent);
+          session.addEventListener("squeezestart", onSessionEvent);
+          session.addEventListener("squeezeend", onSessionEvent);
+          session.addEventListener("end", onSessionEnd);
+          session.addEventListener("inputsourceschange", onInputSourcesChange);
+          if (attributes.xrCompatible !== true) {
+            yield gl.makeXRCompatible();
           }
-          const projectionlayerInit = {
-            colorFormat: gl.RGBA8,
-            depthFormat: glDepthFormat,
-            scaleFactor: framebufferScaleFactor
-          };
-          glBinding = this.getBinding();
-          glProjLayer = glBinding.createProjectionLayer(projectionlayerInit);
-          session.updateRenderState({ layers: [glProjLayer] });
-          renderer.setPixelRatio(1);
-          renderer.setSize(glProjLayer.textureWidth, glProjLayer.textureHeight, false);
-          newRenderTarget = new WebGLRenderTarget(
-            glProjLayer.textureWidth,
-            glProjLayer.textureHeight,
-            {
-              format: RGBAFormat,
-              type: UnsignedByteType,
-              depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, void 0, void 0, void 0, void 0, void 0, void 0, depthFormat),
-              stencilBuffer: attributes.stencil,
-              colorSpace: renderer.outputColorSpace,
-              samples: attributes.antialias ? 4 : 0,
-              resolveDepthBuffer: glProjLayer.ignoreDepthValues === false,
-              resolveStencilBuffer: glProjLayer.ignoreDepthValues === false
+          currentPixelRatio = renderer.getPixelRatio();
+          renderer.getSize(currentSize);
+          const supportsLayers = supportsGlBinding && "createProjectionLayer" in XRWebGLBinding.prototype;
+          if (!supportsLayers) {
+            const layerInit = {
+              antialias: attributes.antialias,
+              alpha: true,
+              depth: attributes.depth,
+              stencil: attributes.stencil,
+              framebufferScaleFactor
+            };
+            glBaseLayer = new XRWebGLLayer(session, gl, layerInit);
+            session.updateRenderState({ baseLayer: glBaseLayer });
+            renderer.setPixelRatio(1);
+            renderer.setSize(glBaseLayer.framebufferWidth, glBaseLayer.framebufferHeight, false);
+            newRenderTarget = new WebGLRenderTarget(
+              glBaseLayer.framebufferWidth,
+              glBaseLayer.framebufferHeight,
+              {
+                format: RGBAFormat,
+                type: UnsignedByteType,
+                colorSpace: renderer.outputColorSpace,
+                stencilBuffer: attributes.stencil,
+                resolveDepthBuffer: glBaseLayer.ignoreDepthValues === false,
+                resolveStencilBuffer: glBaseLayer.ignoreDepthValues === false
+              }
+            );
+          } else {
+            let depthFormat = null;
+            let depthType = null;
+            let glDepthFormat = null;
+            if (attributes.depth) {
+              glDepthFormat = attributes.stencil ? gl.DEPTH24_STENCIL8 : gl.DEPTH_COMPONENT24;
+              depthFormat = attributes.stencil ? DepthStencilFormat : DepthFormat;
+              depthType = attributes.stencil ? UnsignedInt248Type : UnsignedIntType;
             }
-          );
+            const projectionlayerInit = {
+              colorFormat: gl.RGBA8,
+              depthFormat: glDepthFormat,
+              scaleFactor: framebufferScaleFactor
+            };
+            glBinding = this.getBinding();
+            glProjLayer = glBinding.createProjectionLayer(projectionlayerInit);
+            session.updateRenderState({ layers: [glProjLayer] });
+            renderer.setPixelRatio(1);
+            renderer.setSize(glProjLayer.textureWidth, glProjLayer.textureHeight, false);
+            newRenderTarget = new WebGLRenderTarget(
+              glProjLayer.textureWidth,
+              glProjLayer.textureHeight,
+              {
+                format: RGBAFormat,
+                type: UnsignedByteType,
+                depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, void 0, void 0, void 0, void 0, void 0, void 0, depthFormat),
+                stencilBuffer: attributes.stencil,
+                colorSpace: renderer.outputColorSpace,
+                samples: attributes.antialias ? 4 : 0,
+                resolveDepthBuffer: glProjLayer.ignoreDepthValues === false,
+                resolveStencilBuffer: glProjLayer.ignoreDepthValues === false
+              }
+            );
+          }
+          newRenderTarget.isXRRenderTarget = true;
+          this.setFoveation(foveation);
+          customReferenceSpace = null;
+          referenceSpace = yield session.requestReferenceSpace(referenceSpaceType);
+          animation.setContext(session);
+          animation.start();
+          scope.isPresenting = true;
+          scope.dispatchEvent({ type: "sessionstart" });
         }
-        newRenderTarget.isXRRenderTarget = true;
-        this.setFoveation(foveation);
-        customReferenceSpace = null;
-        referenceSpace = await session.requestReferenceSpace(referenceSpaceType);
-        animation.setContext(session);
-        animation.start();
-        scope.isPresenting = true;
-        scope.dispatchEvent({ type: "sessionstart" });
-      }
+      });
     };
     this.getEnvironmentBlendMode = function() {
       if (session !== null) {
@@ -43486,45 +43497,47 @@ var WebGLRenderer = class {
         }
       }
     };
-    this.readRenderTargetPixelsAsync = async function(renderTarget, x, y, width, height, buffer, activeCubeFaceIndex, textureIndex = 0) {
-      if (!(renderTarget && renderTarget.isWebGLRenderTarget)) {
-        throw new Error("THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not THREE.WebGLRenderTarget.");
-      }
-      let framebuffer = properties.get(renderTarget).__webglFramebuffer;
-      if (renderTarget.isWebGLCubeRenderTarget && activeCubeFaceIndex !== void 0) {
-        framebuffer = framebuffer[activeCubeFaceIndex];
-      }
-      if (framebuffer) {
-        if (x >= 0 && x <= renderTarget.width - width && (y >= 0 && y <= renderTarget.height - height)) {
-          state.bindFramebuffer(_gl.FRAMEBUFFER, framebuffer);
-          const texture = renderTarget.textures[textureIndex];
-          const textureFormat = texture.format;
-          const textureType = texture.type;
-          if (!capabilities.textureFormatReadable(textureFormat)) {
-            throw new Error("THREE.WebGLRenderer.readRenderTargetPixelsAsync: renderTarget is not in RGBA or implementation defined format.");
-          }
-          if (!capabilities.textureTypeReadable(textureType)) {
-            throw new Error("THREE.WebGLRenderer.readRenderTargetPixelsAsync: renderTarget is not in UnsignedByteType or implementation defined type.");
-          }
-          const glBuffer = _gl.createBuffer();
-          _gl.bindBuffer(_gl.PIXEL_PACK_BUFFER, glBuffer);
-          _gl.bufferData(_gl.PIXEL_PACK_BUFFER, buffer.byteLength, _gl.STREAM_READ);
-          if (renderTarget.textures.length > 1) _gl.readBuffer(_gl.COLOR_ATTACHMENT0 + textureIndex);
-          _gl.readPixels(x, y, width, height, utils.convert(textureFormat), utils.convert(textureType), 0);
-          const currFramebuffer = _currentRenderTarget !== null ? properties.get(_currentRenderTarget).__webglFramebuffer : null;
-          state.bindFramebuffer(_gl.FRAMEBUFFER, currFramebuffer);
-          const sync = _gl.fenceSync(_gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-          _gl.flush();
-          await probeAsync(_gl, sync, 4);
-          _gl.bindBuffer(_gl.PIXEL_PACK_BUFFER, glBuffer);
-          _gl.getBufferSubData(_gl.PIXEL_PACK_BUFFER, 0, buffer);
-          _gl.deleteBuffer(glBuffer);
-          _gl.deleteSync(sync);
-          return buffer;
-        } else {
-          throw new Error("THREE.WebGLRenderer.readRenderTargetPixelsAsync: requested read bounds are out of range.");
+    this.readRenderTargetPixelsAsync = function(renderTarget, x, y, width, height, buffer, activeCubeFaceIndex, textureIndex = 0) {
+      return __async(this, null, function* () {
+        if (!(renderTarget && renderTarget.isWebGLRenderTarget)) {
+          throw new Error("THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not THREE.WebGLRenderTarget.");
         }
-      }
+        let framebuffer = properties.get(renderTarget).__webglFramebuffer;
+        if (renderTarget.isWebGLCubeRenderTarget && activeCubeFaceIndex !== void 0) {
+          framebuffer = framebuffer[activeCubeFaceIndex];
+        }
+        if (framebuffer) {
+          if (x >= 0 && x <= renderTarget.width - width && (y >= 0 && y <= renderTarget.height - height)) {
+            state.bindFramebuffer(_gl.FRAMEBUFFER, framebuffer);
+            const texture = renderTarget.textures[textureIndex];
+            const textureFormat = texture.format;
+            const textureType = texture.type;
+            if (!capabilities.textureFormatReadable(textureFormat)) {
+              throw new Error("THREE.WebGLRenderer.readRenderTargetPixelsAsync: renderTarget is not in RGBA or implementation defined format.");
+            }
+            if (!capabilities.textureTypeReadable(textureType)) {
+              throw new Error("THREE.WebGLRenderer.readRenderTargetPixelsAsync: renderTarget is not in UnsignedByteType or implementation defined type.");
+            }
+            const glBuffer = _gl.createBuffer();
+            _gl.bindBuffer(_gl.PIXEL_PACK_BUFFER, glBuffer);
+            _gl.bufferData(_gl.PIXEL_PACK_BUFFER, buffer.byteLength, _gl.STREAM_READ);
+            if (renderTarget.textures.length > 1) _gl.readBuffer(_gl.COLOR_ATTACHMENT0 + textureIndex);
+            _gl.readPixels(x, y, width, height, utils.convert(textureFormat), utils.convert(textureType), 0);
+            const currFramebuffer = _currentRenderTarget !== null ? properties.get(_currentRenderTarget).__webglFramebuffer : null;
+            state.bindFramebuffer(_gl.FRAMEBUFFER, currFramebuffer);
+            const sync = _gl.fenceSync(_gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+            _gl.flush();
+            yield probeAsync(_gl, sync, 4);
+            _gl.bindBuffer(_gl.PIXEL_PACK_BUFFER, glBuffer);
+            _gl.getBufferSubData(_gl.PIXEL_PACK_BUFFER, 0, buffer);
+            _gl.deleteBuffer(glBuffer);
+            _gl.deleteSync(sync);
+            return buffer;
+          } else {
+            throw new Error("THREE.WebGLRenderer.readRenderTargetPixelsAsync: requested read bounds are out of range.");
+          }
+        }
+      });
     };
     this.copyFramebufferToTexture = function(texture, position = null, level = 0) {
       const levelScale = Math.pow(2, -level);
@@ -44178,4 +44191,4 @@ three/build/three.module.js:
    * SPDX-License-Identifier: MIT
    *)
 */
-//# sourceMappingURL=chunk-IUDTQY6Y.js.map
+//# sourceMappingURL=chunk-O6HSFTIL.js.map

@@ -65,10 +65,10 @@ import {
   Vector2,
   Vector3,
   VectorKeyframeTrack
-} from "./chunk-IUDTQY6Y.js";
+} from "./chunk-O6HSFTIL.js";
 import {
   __spreadValues
-} from "./chunk-GOMI4DH3.js";
+} from "./chunk-WDMUDEB6.js";
 
 // node_modules/three/examples/jsm/utils/BufferGeometryUtils.js
 function toTrianglesDrawMode(geometry, drawMode) {
