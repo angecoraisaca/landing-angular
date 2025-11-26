@@ -9,6 +9,7 @@ import {
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 @Component({
   selector: 'app-escena3d',
@@ -23,8 +24,10 @@ export class Escena3d implements AfterViewInit, OnDestroy {
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
-  private cube!: THREE.Mesh;
   private controls!: OrbitControls;
+
+  // Modelo 3D
+  private modelo: THREE.Object3D | null = null;
 
   // Animation
   private animationId: number | null = null;
@@ -68,7 +71,7 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x020617);
 
-    // Dimensiones del contenedor
+    // Dimensiones
     const width = this.rendererContainer.nativeElement.clientWidth;
     const height = this.rendererContainer.nativeElement.clientHeight;
 
@@ -81,29 +84,35 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(window.devicePixelRatio || 1);
     this.renderer.shadowMap.enabled = true;
-
     this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
 
     // Luces
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     this.scene.add(ambientLight);
 
-    const directional = new THREE.DirectionalLight(0xffffff, 1);
+    const directional = new THREE.DirectionalLight(0xffffff, 2);
     directional.position.set(5, 5, 5);
-    directional.castShadow = true;
+    directional.castShadow = true;  
     this.scene.add(directional);
 
-    // Cubo 3D
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({
-      color: 0x22c55e,
-      roughness: 0.4,
-      metalness: 0.2,
-    });
+    // Loader GLTF
+    
+    const loader = new GLTFLoader();
 
-    this.cube = new THREE.Mesh(geometry, material);
-    this.cube.castShadow = true;
-    this.scene.add(this.cube);
+    loader.load('assets/models/cuy.glb', (gltf) => {
+      this.modelo = gltf.scene; // Guarda el modelo en una propiedad
+      this.modelo.castShadow = true;
+      this.modelo.receiveShadow = true;
+      this.scene.add(this.modelo);
+    },
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total * 100) + '% cargado');
+      },
+      (error) => {
+        console.error('Error al cargar el modelo:', error);
+      }
+    );
+
 
     // Piso opcional
     const planeGeometry = new THREE.PlaneGeometry(6, 6);
@@ -116,15 +125,13 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     plane.rotation.x = -Math.PI / 2;
     plane.position.y = -0.6;
     plane.receiveShadow = true;
-
     this.scene.add(plane);
 
-    // Controles (mouse)
+    // Controles
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
 
-    // Render inicial
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -135,9 +142,8 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     const animate = () => {
       this.animationId = requestAnimationFrame(animate);
 
-      if (this.rotando) {
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.015;
+      if (this.rotando && this.modelo) {
+        this.modelo.rotation.y += 0.01;
       }
 
       this.controls.update();
@@ -155,21 +161,9 @@ export class Escena3d implements AfterViewInit, OnDestroy {
   }
 
   // ------------------------------
-  // Métodos para botones desde HTML
+  // Métodos botones HTML
   // ------------------------------
   toggleRotation(): void {
     this.rotando = !this.rotando;
-  }
-
-  cambiarColor(): void {
-    if (!this.cube) return;
-
-    const material = this.cube.material as THREE.MeshStandardMaterial;
-
-    material.color = new THREE.Color(
-      Math.random(),
-      Math.random(),
-      Math.random()
-    );
   }
 }
