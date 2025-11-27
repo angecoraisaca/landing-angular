@@ -1,0 +1,38 @@
+<div class="carrito-container">
+
+  <h2>Carro de compras</h2>
+
+  <p *ngIf="cargando">Cargando carro...</p>
+
+  <div *ngIf="!cargando && items.length === 0" class="vacio">
+    Tu carro está vacío.
+  </div>
+
+  <div class="carrito-grid" *ngIf="items.length > 0">
+
+    <div class="item-card" *ngFor="let item of items">
+      
+      <img [src]="item.imagen_url" alt="{{ item.nombre }}">
+
+      <div class="info">
+        <h3>{{ item.nombre }}</h3>
+        <p>${{ item.precio }}</p>
+
+        <div class="cantidad">
+          <button (click)="disminuir(item)">-</button>
+          <span>{{ item.cantidad }}</span>
+          <button (click)="incrementar(item)">+</button>
+        </div>
+
+        <button class="eliminar" (click)="eliminar(item)">Eliminar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="total" *ngIf="items.length > 0">
+    <h3>Total: ${{ total }}</h3>
+    <button class="checkout">Proceder al pago</button>
+  </div>
+
+</div>

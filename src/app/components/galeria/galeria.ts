@@ -1,7 +1,8 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';       // 👈 IMPORTANTE
+import { Router } from '@angular/router';
 import { Productos } from '../../services/productos';
+import { CarritoService } from '../../services/carrito';
 
 @Component({
   selector: 'app-galeria',
@@ -17,8 +18,9 @@ export class Galeria {
 
   constructor(
     private productosService: Productos,
+    private carritoService: CarritoService,   // 👈 IMPORTANTE
     private cdr: ChangeDetectorRef,
-    private router: Router       // 👈 INYECTAS EL ROUTER
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -36,5 +38,16 @@ export class Galeria {
     });
   }
 
+  agregarAlCarrito(producto: any) {
+    this.carritoService.agregarAlCarrito(producto).subscribe({
+      next: () => {
+        alert('Producto agregado al carrito');
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Hubo un error al agregar al carrito');
+      }
+    });
+  }
 
 }

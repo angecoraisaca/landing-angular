@@ -1,8 +1,16 @@
 <header class="navbar">
   <div class="navbar-logo">MiLanding<span>.ng</span></div>
+
   <nav class="navbar-links">
     <a href="#inicio">Inicio</a>
     <a href="#servicios">Servicios</a>
     <a href="#contacto">Contacto</a>
+
+    <!-- Botón del carrito -->
+    <a routerLink="/carro" class="carrito-btn">
+      <i class="fa fa-shopping-cart"></i>
+      <span class="contador">{{ carritoService.itemsCountValue }}</span>
+    </a>
+
   </nav>
 </header>
