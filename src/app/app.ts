@@ -6,7 +6,8 @@ import { Contacto } from './components/contacto/contacto';
 import { Footer } from './components/footer/footer';
 import { Escena3d } from './components/escena3d/escena3d';
 import { Galeria } from './components/galeria/galeria';
-
+// IMPORT CORRECTO: importa exactamente el nombre de la clase exportada en ./components/carro/carro
+import { CarroComponent } from './components/carro/carro';
 
 @Component({
   selector: 'app-root',
@@ -18,9 +19,10 @@ import { Galeria } from './components/galeria/galeria';
     Contacto,
     Footer,
     Escena3d,
-    Galeria
+    Galeria,
+    CarroComponent   // <- usar el nombre correcto aquí
   ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']   // <- CORRECCIÓN: styleUrls (en plural)
 })
 export class App {}
