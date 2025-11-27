@@ -4,168 +4,194 @@ import {
   ElementRef,
   OnDestroy,
   ViewChild,
-  HostListener
 } from '@angular/core';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 @Component({
   selector: 'app-escena3d',
+  standalone: true,
   templateUrl: './escena3d.html',
-  styleUrls: ['./escena3d.css']
+  styleUrls: ['./escena3d.css'],
 })
 export class Escena3d implements AfterViewInit, OnDestroy {
+  @ViewChild('canvasContainer', { static: true })
+  canvasContainer!: ElementRef<HTMLDivElement>;
 
-  @ViewChild('rendererContainer', { static: false })
-  rendererContainer!: ElementRef<HTMLDivElement>;
-
-  // Three.js
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
-  private cube!: THREE.Mesh;
   private controls!: OrbitControls;
 
-  // Animación
   private animationId: number | null = null;
-  rotando = true;
+
+  // modelo puede ser nulo hasta que cargue
+  private modelo: THREE.Object3D | null = null;
+
+  isRotating = true;
+
+  private get isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof document !== 'undefined';
+  }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
+
     this.initScene();
-    this.startAnimation();
+    this.animate();
   }
 
   ngOnDestroy(): void {
-    this.stopAnimation();
+    if (this.animationId !== null) {
+      cancelAnimationFrame(this.animationId);
+    }
+    window.removeEventListener('resize', this.onWindowResize);
     if (this.renderer) {
       this.renderer.dispose();
     }
   }
 
-  // Redimensionar al cambiar tamaño de ventana
-  @HostListener('window:resize', [])
-  onWindowResize(): void {
-    if (!this.camera || !this.renderer || !this.rendererContainer) return;
+  // ----------------- INICIALIZAR ESCENA -----------------
 
-    const width = this.rendererContainer.nativeElement.clientWidth;
-    const height = this.rendererContainer.nativeElement.clientHeight;
+  private initScene(): void {
+    const container = this.canvasContainer.nativeElement;
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 450;
+
+    // Escena
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x020617);
+
+    // Cámara
+    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    this.camera.position.set(0, 2, 6);
+
+    // Renderizador
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(this.renderer.domElement);
+
+    // Controles
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.target.set(0, 1, 0);
+
+    // Luces
+    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+    this.scene.add(ambient);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(5, 10, 5);
+    this.scene.add(dirLight);
+
+    // Suelo
+    const planeGeo = new THREE.PlaneGeometry(20, 20);
+    const planeMat = new THREE.MeshStandardMaterial({
+      color: 0x111827,
+      roughness: 0.9,
+      metalness: 0.1,
+    });
+    const plane = new THREE.Mesh(planeGeo, planeMat);
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = 0;
+    this.scene.add(plane);
+
+    // ---------- Cargar camiseta.glb ----------
+    const loader = new GLTFLoader();
+
+    loader.load(
+
+      'assets/modelos/camiseta.glb', // <--- CAMBIO APLICADO AQUÍ
+      
+      (gltf: GLTF) => {
+        this.modelo = gltf.scene;
+
+        this.modelo.position.set(0, 0.5, 0);
+        this.modelo.scale.set(1.5, 1.5, 1.5);
+
+        this.scene.add(this.modelo);
+      },
+      undefined,
+      (error: unknown) => {
+        console.error('Error cargando camiseta.glb', error);
+      }
+    );
+
+    window.addEventListener('resize', this.onWindowResize);
+  }
+
+  private onWindowResize = () => {
+    if (!this.isBrowser || !this.camera || !this.renderer) return;
+
+    const container = this.canvasContainer.nativeElement;
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 450;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
-  }
+  };
 
-  private initScene(): void {
-    // 1. Escena
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x020617);
+  // ----------------- ANIMACIÓN -----------------
 
-    // 2. Cámara
-    const width = this.rendererContainer.nativeElement.clientWidth;
-    const height = this.rendererContainer.nativeElement.clientHeight;
-    const aspectRatio = width / height;
+  private animate(): void {
+    if (!this.renderer || !this.scene || !this.camera) return;
 
-    this.camera = new THREE.PerspectiveCamera(
-      60,            // campo de visión
-      aspectRatio,   // aspect ratio
-      0.1,           // plano cercano
-      1000           // plano lejano
-    );
-    this.camera.position.set(2, 2, 4);
+    this.animationId = requestAnimationFrame(() => this.animate());
 
-    // 3. Renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(window.devicePixelRatio || 1);
-    this.renderer.shadowMap.enabled = true;
+    if (this.isRotating && this.modelo) {
+      this.modelo.rotation.y += 0.01;
+    }
 
-    this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
-
-    // 4. Luz ambiental
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    this.scene.add(ambientLight);
-
-    // 5. Luz direccional
-    const directional = new THREE.DirectionalLight(0xffffff, 0.8);
-    directional.position.set(5, 5, 5);
-    directional.castShadow = true;
-    this.scene.add(directional);
-
-    // 6. Cubo
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshStandardMaterial({
-      color: 0x22c55e,
-      roughness: 0.4,
-      metalness: 0.2
-    });
-    this.cube = new THREE.Mesh(geometry, material);
-    this.cube.castShadow = true;
-    this.cube.receiveShadow = true;
-    this.scene.add(this.cube);
-
-    // 7. Piso opcional
-    const planeGeometry = new THREE.PlaneGeometry(6, 6);
-    const planeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x111827,
-      roughness: 0.8,
-      metalness: 0
-    });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.rotation.x = -Math.PI / 2;
-    plane.position.y = -0.6;
-    plane.receiveShadow = true;
-    this.scene.add(plane);
-
-    // 8. OrbitControls para rotar con el mouse
-    this.controls = new OrbitControls(
-      this.camera,
-      this.renderer.domElement
-    );
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.05;
-    this.controls.rotateSpeed = 0.8;
-    this.controls.zoomSpeed = 0.8;
-
-    // 9. Render inicial
+    this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
-  private startAnimation(): void {
-    const animate = () => {
-      // Guardar id para poder detenerlo
-      this.animationId = requestAnimationFrame(animate);
+  // ----------------- BOTONES -----------------
 
-      if (this.rotando && this.cube) {
-        this.cube.rotation.x += 0.01;
-        this.cube.rotation.y += 0.015;
-      }
-
-      this.controls.update();
-      this.renderer.render(this.scene, this.camera);
-    };
-
-    animate();
+  toggleRotacion(): void {
+    this.isRotating = !this.isRotating;
   }
 
-  private stopAnimation(): void {
-    if (this.animationId !== null) {
-      cancelAnimationFrame(this.animationId);
-      this.animationId = null;
-    }
+  detenerRotacion(): void {
+    this.isRotating = false;
   }
 
-  // Métodos llamados desde el HTML
-  toggleRotation(): void {
-    this.rotando = !this.rotando;
+  reanudarRotacion(): void {
+    this.isRotating = true;
   }
 
   cambiarColor(): void {
-    if (!this.cube) return;
+    if (!this.modelo) return;
 
-    const material = this.cube.material as THREE.MeshStandardMaterial;
-    // Color aleatorio
-    const randomColor = new THREE.Color(Math.random(), Math.random(), Math.random());
-    material.color = randomColor;
+    const nuevoColor = new THREE.Color(
+      Math.random(),
+      Math.random(),
+      Math.random()
+    );
+
+    this.modelo.traverse((child: THREE.Object3D) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const material = mesh.material;
+
+        if (Array.isArray(material)) {
+          material.forEach((m) => {
+            const stdMat = m as THREE.MeshStandardMaterial;
+            if (stdMat.color) {
+              stdMat.color = nuevoColor.clone();
+            }
+          });
+        } else {
+          const stdMat = material as THREE.MeshStandardMaterial;
+          if (stdMat.color) {
+            stdMat.color = nuevoColor.clone();
+          }
+        }
+      }
+    });
   }
 }
