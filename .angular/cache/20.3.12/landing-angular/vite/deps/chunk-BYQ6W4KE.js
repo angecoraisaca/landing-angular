@@ -1,17 +1,17 @@
 import {
   withHttpTransferCache
-} from "./chunk-PWFFS3K4.js";
+} from "./chunk-XPQGNUAP.js";
 import {
   CommonModule,
   DomAdapter,
   PLATFORM_BROWSER_ID,
   getDOM,
   setRootDomAdapter
-} from "./chunk-XR2QOJLO.js";
+} from "./chunk-7M4R4QRC.js";
 import {
   XhrFactory,
   parseCookieValue
-} from "./chunk-DASHI2JV.js";
+} from "./chunk-BV6YITCM.js";
 import {
   APP_ID,
   ApplicationModule,
@@ -73,7 +73,7 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-QLQBX6FV.js";
+} from "./chunk-ZMIMCKWT.js";
 import {
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
@@ -1983,7 +1983,7 @@ function provideClientHydration(...features) {
   }
   return makeEnvironmentProviders([typeof ngDevMode !== "undefined" && ngDevMode ? provideZoneJsCompatibilityDetector() : [], typeof ngDevMode !== "undefined" && ngDevMode ? provideEnabledBlockingInitialNavigationDetector() : [], withDomHydration(), featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions ? [] : withHttpTransferCache({}), providers]);
 }
-var VERSION = new Version("20.3.11");
+var VERSION = new Version("20.3.14");
 
 export {
   EventManagerPlugin,
@@ -2028,9 +2028,9 @@ export {
 @angular/platform-browser/fesm2022/browser.mjs:
 @angular/platform-browser/fesm2022/platform-browser.mjs:
   (**
-   * @license Angular v20.3.11
+   * @license Angular v20.3.14
    * (c) 2010-2025 Google LLC. https://angular.dev/
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-PQ6MI55A.js.map
+//# sourceMappingURL=chunk-BYQ6W4KE.js.map

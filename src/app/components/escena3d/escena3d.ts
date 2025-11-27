@@ -103,9 +103,8 @@ export class Escena3d implements AfterViewInit, OnDestroy {
     const loader = new GLTFLoader();
 
     loader.load(
-
-      'assets/modelos/camiseta.glb', // <--- CAMBIO APLICADO AQUÍ
       
+      'assets/modelos/camiseta.glb', // <--- CAMBIO APLICADO AQUÍ
       (gltf: GLTF) => {
         this.modelo = gltf.scene;
 

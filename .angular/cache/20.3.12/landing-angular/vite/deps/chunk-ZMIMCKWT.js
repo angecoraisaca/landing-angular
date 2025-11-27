@@ -3497,7 +3497,7 @@ var Version = class {
     this.patch = parts.slice(2).join(".");
   }
 };
-var VERSION = new Version("20.3.11");
+var VERSION = new Version("20.3.14");
 var ERROR_DETAILS_PAGE_BASE_URL = (() => {
   const versionSubDomain = VERSION.major !== "0" ? `v${VERSION.major}.` : "";
   return `https://${versionSubDomain}angular.dev/errors`;
@@ -15191,7 +15191,7 @@ var ComponentFactory2 = class extends ComponentFactory$1 {
   }
 };
 function createRootTView(rootSelectorOrNode, componentDef, componentBindings, directives) {
-  const tAttributes = rootSelectorOrNode ? ["ng-version", "20.3.11"] : (
+  const tAttributes = rootSelectorOrNode ? ["ng-version", "20.3.14"] : (
     // Extract attributes and classes from the first selector only to match VE behavior.
     extractAttrsAndClassesFromSelector(componentDef.selectors[0])
   );
@@ -26007,14 +26007,13 @@ function upgradeLinkedSignalGetter(getter, debugName) {
   upgradedGetter.asReadonly = signalAsReadonlyFn.bind(getter);
   return upgradedGetter;
 }
-var RESOURCE_VALUE_THROWS_ERRORS_DEFAULT = true;
 function resource(options) {
   if (ngDevMode && !options?.injector) {
     assertInInjectionContext(resource);
   }
   const oldNameForParams = options.request;
   const params = options.params ?? oldNameForParams ?? (() => null);
-  return new ResourceImpl(params, getLoader(options), options.defaultValue, options.equal ? wrapEqualityFn(options.equal) : void 0, options.injector ?? inject2(Injector), RESOURCE_VALUE_THROWS_ERRORS_DEFAULT);
+  return new ResourceImpl(params, getLoader(options), options.defaultValue, options.equal ? wrapEqualityFn(options.equal) : void 0, options.injector ?? inject2(Injector));
 }
 var BaseWritableResource = class {
   value;
@@ -26062,7 +26061,7 @@ var ResourceImpl = class extends BaseWritableResource {
   resolvePendingTask = void 0;
   destroyed = false;
   unregisterOnDestroy;
-  constructor(request, loaderFn, defaultValue, equal, injector, throwErrorsFromValue = RESOURCE_VALUE_THROWS_ERRORS_DEFAULT) {
+  constructor(request, loaderFn, defaultValue, equal, injector) {
     super(
       // Feed a computed signal for the value to `BaseWritableResource`, which will upgrade it to a
       // `WritableSignal` that delegates to `ResourceImpl.set`.
@@ -26075,11 +26074,7 @@ var ResourceImpl = class extends BaseWritableResource {
           return defaultValue;
         }
         if (!isResolved(streamValue)) {
-          if (throwErrorsFromValue) {
-            throw new ResourceValueError(this.error());
-          } else {
-            return defaultValue;
-          }
+          throw new ResourceValueError(this.error());
         }
         return streamValue.value;
       }, { equal })
@@ -30820,7 +30815,7 @@ export {
 @angular/core/fesm2022/resource.mjs:
 @angular/core/fesm2022/primitives/event-dispatch.mjs:
   (**
-   * @license Angular v20.3.11
+   * @license Angular v20.3.14
    * (c) 2010-2025 Google LLC. https://angular.dev/
    * License: MIT
    *)
@@ -30828,7 +30823,7 @@ export {
 @angular/core/fesm2022/debug_node.mjs:
 @angular/core/fesm2022/core.mjs:
   (**
-   * @license Angular v20.3.11
+   * @license Angular v20.3.14
    * (c) 2010-2025 Google LLC. https://angular.dev/
    * License: MIT
    *)
@@ -30849,4 +30844,4 @@ export {
    * found in the LICENSE file at https://angular.dev/license
    *)
 */
-//# sourceMappingURL=chunk-QLQBX6FV.js.map
+//# sourceMappingURL=chunk-ZMIMCKWT.js.map
